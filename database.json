@@ -1,0 +1,16 @@
+{
+    "dev":{
+        "driver":"pg",
+        "host":"127.0.0.1",
+        "user":"milesoda_user",
+        "database":"facebook_dev",
+        "password":"shaban333"
+    },
+    "test":{
+        "driver":"pg",
+        "host":"127.0.0.1",
+        "user":"milesoda_user",
+        "database":"facebook_test",
+        "password":"shaban333"
+    }
+}
