@@ -10,8 +10,9 @@ const controller = (routePrefix) => {
         for (const key of targetPrototype) {
             const path = Reflect.getMetadata("path" /* AppFeatures.PATH */, target.prototype, key);
             const method = Reflect.getMetadata("method" /* AppFeatures.METHOD */, target.prototype, key);
+            const middleware = Reflect.getMetadata("middleware" /* AppFeatures.MIDDLEWARE */, target.prototype, key) || [];
             if (path && method) {
-                router[method](`${routePrefix}${path}`, target.prototype[key]);
+                router[method](`${routePrefix}${path}`, [...middleware], target.prototype[key]);
             }
         }
     };

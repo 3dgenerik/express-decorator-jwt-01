@@ -20,33 +20,38 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const decorators_1 = require("../../decorators");
 const usersStore_1 = require("../../../models/usersStore");
+const middleware_1 = require("../../decorators/middleware");
+const idParamValidator_1 = require("../../../middlewares/idParamValidator");
 const customError_1 = require("../../../errors/customError");
-let GetAllUsersController = 
+let GetUserById = 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-class GetAllUsersController {
-    getUsers(req, res, next) {
+class GetUserById {
+    getUserById(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const type = req.params.type;
+                const id = req.params.id;
                 const store = new usersStore_1.UsersStore();
-                const users = yield store.getAllUsers(type === 'long' ? true : false);
-                res.send(users);
+                const user = yield store.getUserByID(Number(id));
+                if (!user)
+                    throw new customError_1.CustomError(`User doesn't exists.`, 401);
+                res.send(user);
             }
             catch (err) {
                 if (err instanceof customError_1.CustomError)
                     next(err);
-                next(new customError_1.CustomError(`${err}`, 500));
+                next(new customError_1.CustomError(`${err}`, 422));
             }
         });
     }
 };
 __decorate([
-    (0, decorators_1.get)(`${"/users" /* AppPaths.ENDPOINT_USERS */}/:type`),
+    (0, decorators_1.get)(`${"/users" /* AppPaths.ENDPOINT_USERS */}/:id`),
+    (0, middleware_1.middleware)((0, idParamValidator_1.idParamValidator)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object, Function]),
     __metadata("design:returntype", Promise)
-], GetAllUsersController.prototype, "getUsers", null);
-GetAllUsersController = __decorate([
+], GetUserById.prototype, "getUserById", null);
+GetUserById = __decorate([
     (0, decorators_1.controller)("/api" /* AppPaths.PATH_PREFIX */)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-], GetAllUsersController);
+], GetUserById);

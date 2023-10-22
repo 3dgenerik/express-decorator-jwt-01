@@ -1,19 +1,23 @@
-import { NextFunction, Request, Response } from "express"
-import { CustomError } from "../errors/customError";
+import { NextFunction, Request, Response } from 'express';
+import { CustomError } from '../errors/customError';
 
-export const bodyValidator = (keys: string[])=>{
-    return (req: Request, res: Response, next: NextFunction)=>{
-        try{            
+export const bodyValidator = (keys: string[]) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        try {
             const body = req.body;
+            const emptyValues = []
             for (const key of keys) {
-                if(!body[key]){
-                    throw new CustomError(`Missing values: ${[...keys]}`, 400)
+                if (!body[key]) {
+                    emptyValues.push(key)
                 }
             }
-        }catch(err){
-            if(err instanceof CustomError)
-                next(err)
-            next(new CustomError(`${err}`, 500))
+            if(emptyValues.length > 0)
+                throw new CustomError(`Missing values: ${[...emptyValues]}`, 400);
+
+            next()
+        } catch (err) {
+            if (err instanceof CustomError) next(err);
+            next(new CustomError(`${err}`, 500));
         }
-    }
-}
+    };
+};

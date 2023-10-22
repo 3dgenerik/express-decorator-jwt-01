@@ -13,15 +13,97 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersStore = void 0;
+const config_1 = require("../config");
 const database_1 = __importDefault(require("../database"));
+const bcrypt_1 = __importDefault(require("bcrypt"));
 class UsersStore {
-    getAllUsers() {
+    hash(password) {
         return __awaiter(this, void 0, void 0, function* () {
+            const hash = bcrypt_1.default.hash(password, Number(config_1.SALT_ROUND));
+            return hash;
+        });
+    }
+    compare(password, hash) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const isMatch = bcrypt_1.default.compare(password, hash);
+            return isMatch;
+        });
+    }
+    getAllUsers(long) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let sql = '';
             const conn = yield database_1.default.connect();
-            const sql = 'SELECT * FROM users';
+            if (long)
+                sql = 'SELECT users.*, avatars.url, posts.title, posts.content, posts.users_id FROM users JOIN avatars ON users.avatars_id = avatars.id JOIN posts ON users.id = posts.users_id';
+            else
+                sql = 'SELECT * FROM users';
             const result = yield conn.query(sql);
             conn.release();
             return result.rows;
+        });
+    }
+    userExistById(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const allUsers = yield this.getAllUsers(false);
+            for (const user of allUsers) {
+                if (user.id === id)
+                    return true;
+            }
+            return false;
+        });
+    }
+    userExist(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const allUsers = yield this.getAllUsers(false);
+            for (const item of allUsers) {
+                if (user.name === item.name && user.email === item.email)
+                    return true;
+            }
+            return false;
+        });
+    }
+    getUserByID(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!(yield this.userExistById(id))) {
+                return null;
+            }
+            const conn = yield database_1.default.connect();
+            const sql = 'SELECT * FROM users WHERE id=($1)';
+            const result = yield conn.query(sql, [id]);
+            conn.release();
+            return result.rows[0];
+        });
+    }
+    createUser(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (yield this.userExist(user))
+                return null;
+            const hash = yield this.hash(user.password);
+            const conn = yield database_1.default.connect();
+            const sql = 'INSERT INTO users (name, email, hash, avatars_id) VALUES($1, $2, $3, $4) RETURNING *';
+            const result = yield conn.query(sql, [
+                user.name,
+                user.email,
+                hash,
+                Number(user.avatars_id),
+            ]);
+            conn.release;
+            return result.rows[0];
+        });
+    }
+    authUser(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const isUserExist = yield this.userExist(user);
+            if (!isUserExist)
+                return null;
+            const conn = yield database_1.default.connect();
+            const sql = 'SELECT * FROM users WHERE name = ($1) AND email = ($2)';
+            const result = yield conn.query(sql, [user.name, user.email]);
+            const authorizedUser = result.rows[0];
+            const isMatch = yield this.compare(user.password, authorizedUser.hash);
+            if (!isMatch)
+                return null;
+            return authorizedUser;
         });
     }
 }

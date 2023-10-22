@@ -5,12 +5,12 @@ class CustomError extends Error {
     constructor(message, statusCode) {
         super(message);
         this.statusCode = statusCode;
-        Object.setPrototypeOf(this, CustomError);
+        Object.setPrototypeOf(this, CustomError.prototype);
     }
     formatError() {
         return {
             message: this.message,
-            statusCode: this.statusCode
+            statusCode: this.statusCode,
         };
     }
 }

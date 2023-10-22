@@ -1,17 +1,17 @@
-import { ICustomError } from "../interfaces";
+import { ICustomError } from '../interfaces';
 
-export class CustomError extends Error{
+export class CustomError extends Error {
     private statusCode: number;
-    constructor(message: string, statusCode: number){
-        super(message)
+    constructor(message: string, statusCode: number) {
+        super(message);
         this.statusCode = statusCode;
-        Object.setPrototypeOf(this, CustomError)
+        Object.setPrototypeOf(this, CustomError.prototype);
     }
 
-    formatError():ICustomError{
+    formatError(): ICustomError {
         return {
             message: this.message,
-            statusCode: this.statusCode
-        }
+            statusCode: this.statusCode,
+        };
     }
 }

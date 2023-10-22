@@ -17,36 +17,48 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const decorators_1 = require("../../decorators");
-const usersStore_1 = require("../../../models/usersStore");
+const middleware_1 = require("../../decorators/middleware");
+const bodyValidator_1 = require("../../../middlewares/bodyValidator");
 const customError_1 = require("../../../errors/customError");
-let GetAllUsersController = 
+const usersStore_1 = require("../../../models/usersStore");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const config_1 = require("../../../config");
+let CreateUser = 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-class GetAllUsersController {
-    getUsers(req, res, next) {
+class CreateUser {
+    createUser(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const type = req.params.type;
+                const user = req.body;
                 const store = new usersStore_1.UsersStore();
-                const users = yield store.getAllUsers(type === 'long' ? true : false);
-                res.send(users);
+                const newUser = yield store.createUser(user);
+                if (!newUser) {
+                    throw new customError_1.CustomError(`User with name ${user.name} already exists`, 401);
+                }
+                const token = jsonwebtoken_1.default.sign({ user: newUser }, config_1.SECRET_TOKEN);
+                res.send(newUser);
             }
             catch (err) {
                 if (err instanceof customError_1.CustomError)
                     next(err);
-                next(new customError_1.CustomError(`${err}`, 500));
+                next(new customError_1.CustomError(`${err}`, 422));
             }
         });
     }
 };
 __decorate([
-    (0, decorators_1.get)(`${"/users" /* AppPaths.ENDPOINT_USERS */}/:type`),
+    (0, decorators_1.post)(`${"/users" /* AppPaths.ENDPOINT_USERS */}/signup`),
+    (0, middleware_1.middleware)((0, bodyValidator_1.bodyValidator)(['name', 'email', 'password', 'avatars_id'])),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object, Function]),
     __metadata("design:returntype", Promise)
-], GetAllUsersController.prototype, "getUsers", null);
-GetAllUsersController = __decorate([
+], CreateUser.prototype, "createUser", null);
+CreateUser = __decorate([
     (0, decorators_1.controller)("/api" /* AppPaths.PATH_PREFIX */)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-], GetAllUsersController);
+], CreateUser);

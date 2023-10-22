@@ -19,18 +19,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const decorators_1 = require("../../decorators");
-const usersStore_1 = require("../../../models/usersStore");
 const customError_1 = require("../../../errors/customError");
-let GetAllUsersController = 
+const postsStore_1 = require("../../../models/postsStore");
+let GetAllPosts = 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-class GetAllUsersController {
-    getUsers(req, res, next) {
+class GetAllPosts {
+    getAllPosts(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const type = req.params.type;
-                const store = new usersStore_1.UsersStore();
-                const users = yield store.getAllUsers(type === 'long' ? true : false);
-                res.send(users);
+                const store = new postsStore_1.PostsStore();
+                const allPosts = yield store.getAllPosts();
+                res.send(allPosts);
             }
             catch (err) {
                 if (err instanceof customError_1.CustomError)
@@ -41,12 +40,12 @@ class GetAllUsersController {
     }
 };
 __decorate([
-    (0, decorators_1.get)(`${"/users" /* AppPaths.ENDPOINT_USERS */}/:type`),
+    (0, decorators_1.get)("/posts" /* AppPaths.ENDPOINT_POSTS */),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object, Function]),
     __metadata("design:returntype", Promise)
-], GetAllUsersController.prototype, "getUsers", null);
-GetAllUsersController = __decorate([
+], GetAllPosts.prototype, "getAllPosts", null);
+GetAllPosts = __decorate([
     (0, decorators_1.controller)("/api" /* AppPaths.PATH_PREFIX */)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-], GetAllUsersController);
+], GetAllPosts);

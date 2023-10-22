@@ -4,7 +4,8 @@ exports.put = exports.del = exports.post = exports.get = exports.routeWrapper = 
 require("reflect-metadata");
 const routeWrapper = (method) => {
     return (path) => {
-        return (target, key, desc) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+        return (target, key) => {
             Reflect.defineMetadata("path" /* AppFeatures.PATH */, path, target, key);
             Reflect.defineMetadata("method" /* AppFeatures.METHOD */, method, target, key);
         };
