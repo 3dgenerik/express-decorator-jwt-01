@@ -18,10 +18,10 @@ export class UsersStore {
     async getAllUsers(long: boolean): Promise<IUser[]> {
         let sql: string = '';
         const conn = await client.connect();
-        if(long)
-            sql = 'SELECT users.*, avatars.url, posts.title, posts.content, posts.users_id FROM users JOIN avatars ON users.avatars_id = avatars.id JOIN posts ON users.id = posts.users_id';
-        else
-            sql = 'SELECT * FROM users';
+        if (long)
+            sql =
+                'SELECT users_table.*, avatars_table.url, posts_table.id AS posts_id, posts_table.title, posts_table.content, posts_table.users_id, profiles_table.first_name, profiles_table.last_name, profiles_table.date_of_birth, profiles_table.user_id AS profiles_user_id FROM users_table JOIN avatars_table ON users_table.avatars_id = avatars_table.id JOIN posts_table ON users_table.id = posts_table.users_id JOIN profiles_table ON users_table.id = profiles_table.user_id';
+        else sql = 'SELECT * FROM users_table';
         const result = await conn.query(sql);
         conn.release();
         return result.rows;
@@ -50,7 +50,7 @@ export class UsersStore {
         }
 
         const conn = await client.connect();
-        const sql = 'SELECT * FROM users WHERE id=($1)';
+        const sql = 'SELECT * FROM users_table WHERE id=($1)';
         const result = await conn.query(sql, [id]);
         conn.release();
 
@@ -60,11 +60,10 @@ export class UsersStore {
     async createUser(user: IUser): Promise<IUser | null> {
         if (await this.userExist(user)) return null;
 
-
         const hash = await this.hash(user.password);
         const conn = await client.connect();
         const sql =
-            'INSERT INTO users (name, email, hash, avatars_id) VALUES($1, $2, $3, $4) RETURNING *';
+            'INSERT INTO users_table (name, email, hash, avatars_id) VALUES($1, $2, $3, $4) RETURNING *';
         const result = await conn.query(sql, [
             user.name,
             user.email,
@@ -75,23 +74,19 @@ export class UsersStore {
         return result.rows[0];
     }
 
-    async authUser(user: IUser):Promise<IUser | null>{
-        const isUserExist = await this.userExist(user)
-        if(!isUserExist)
-            return null
+    async authUser(user: IUser): Promise<IUser | null> {
+        const isUserExist = await this.userExist(user);
+        if (!isUserExist) return null;
 
-        const conn = await client.connect()
-        const sql = 'SELECT * FROM users WHERE name = ($1) AND email = ($2)';
-        const result = await conn.query(sql, [user.name, user.email])
-        const authorizedUser = result.rows[0]
+        const conn = await client.connect();
+        const sql = 'SELECT * FROM users_table WHERE name = ($1) AND email = ($2)';
+        const result = await conn.query(sql, [user.name, user.email]);
+        const authorizedUser = result.rows[0];
 
-        const isMatch = await this.compare(user.password, authorizedUser.hash)
+        const isMatch = await this.compare(user.password, authorizedUser.hash);
 
-        if(!isMatch)
-            return null
+        if (!isMatch) return null;
 
-        return authorizedUser
+        return authorizedUser;
     }
-
-
 }

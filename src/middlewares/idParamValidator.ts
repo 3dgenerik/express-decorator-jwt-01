@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { CustomError } from '../errors/customError';
 
-export const idParamValidator = () => {
+export const idParamValidator = ():RequestHandler => {
     return (req: Request, res: Response, next: NextFunction) => {
         try {
             const id = req.params.id as unknown as string;

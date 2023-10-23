@@ -12,26 +12,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PostsStore = void 0;
+exports.ProfilesStore = void 0;
 const database_1 = __importDefault(require("../database"));
-class PostsStore {
-    getAllPosts() {
+class ProfilesStore {
+    getAllProfiles() {
         return __awaiter(this, void 0, void 0, function* () {
             const conn = yield database_1.default.connect();
-            const sql = 'SELECT * FROM posts_table';
+            const sql = 'SELECT * FROM profiles_table';
             const result = yield conn.query(sql);
             conn.release();
             return result.rows;
         });
     }
-    createPost(post, userIdJwt) {
+    createProfile(profile, userIdJwt) {
         return __awaiter(this, void 0, void 0, function* () {
             const conn = yield database_1.default.connect();
             //ISPRAVI TRECI PARAMETAR
-            const sql = 'INSERT INTO posts_table (title, content, users_id) VALUES($1, $2, $3) RETURNING *';
+            const sql = 'INSERT INTO profiles_table (first_name, last_name, date_of_birth, user_id) VALUES($1, $2, $3, $4) RETURNING *';
             const result = yield conn.query(sql, [
-                post.title,
-                post.content,
+                profile.first_name,
+                profile.last_name,
+                profile.date_of_birth,
                 userIdJwt,
             ]);
             conn.release();
@@ -39,4 +40,4 @@ class PostsStore {
         });
     }
 }
-exports.PostsStore = PostsStore;
+exports.ProfilesStore = ProfilesStore;

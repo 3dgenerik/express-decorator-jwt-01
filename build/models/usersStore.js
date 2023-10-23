@@ -34,9 +34,10 @@ class UsersStore {
             let sql = '';
             const conn = yield database_1.default.connect();
             if (long)
-                sql = 'SELECT users.*, avatars.url, posts.title, posts.content, posts.users_id FROM users JOIN avatars ON users.avatars_id = avatars.id JOIN posts ON users.id = posts.users_id';
+                sql =
+                    'SELECT users_table.*, avatars_table.url, posts_table.id AS posts_id, posts_table.title, posts_table.content, posts_table.users_id, profiles_table.first_name, profiles_table.last_name, profiles_table.date_of_birth, profiles_table.user_id AS profiles_user_id FROM users_table JOIN avatars_table ON users_table.avatars_id = avatars_table.id JOIN posts_table ON users_table.id = posts_table.users_id JOIN profiles_table ON users_table.id = profiles_table.user_id';
             else
-                sql = 'SELECT * FROM users';
+                sql = 'SELECT * FROM users_table';
             const result = yield conn.query(sql);
             conn.release();
             return result.rows;
@@ -68,7 +69,7 @@ class UsersStore {
                 return null;
             }
             const conn = yield database_1.default.connect();
-            const sql = 'SELECT * FROM users WHERE id=($1)';
+            const sql = 'SELECT * FROM users_table WHERE id=($1)';
             const result = yield conn.query(sql, [id]);
             conn.release();
             return result.rows[0];
@@ -80,7 +81,7 @@ class UsersStore {
                 return null;
             const hash = yield this.hash(user.password);
             const conn = yield database_1.default.connect();
-            const sql = 'INSERT INTO users (name, email, hash, avatars_id) VALUES($1, $2, $3, $4) RETURNING *';
+            const sql = 'INSERT INTO users_table (name, email, hash, avatars_id) VALUES($1, $2, $3, $4) RETURNING *';
             const result = yield conn.query(sql, [
                 user.name,
                 user.email,
@@ -97,7 +98,7 @@ class UsersStore {
             if (!isUserExist)
                 return null;
             const conn = yield database_1.default.connect();
-            const sql = 'SELECT * FROM users WHERE name = ($1) AND email = ($2)';
+            const sql = 'SELECT * FROM users_table WHERE name = ($1) AND email = ($2)';
             const result = yield conn.query(sql, [user.name, user.email]);
             const authorizedUser = result.rows[0];
             const isMatch = yield this.compare(user.password, authorizedUser.hash);

@@ -4,15 +4,15 @@ import { bodyValidator } from '../../../middlewares/bodyValidator';
 import { controller, post } from '../../decorators';
 import { middleware } from '../../decorators/middleware';
 import { CustomError } from '../../../errors/customError';
-import { PostsStore } from '../../../models/postsStore';
-import { IPost} from '../../../interfaces';
+import { IProfile} from '../../../interfaces';
 import { headerMiddleware } from '../../../middlewares/headerMiddleware';
+import { ProfilesStore } from '../../../models/profilesStore';
 
 @controller(AppPaths.PATH_PREFIX)
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-class CreatePostController {
-    @post(`${AppPaths.ENDPOINT_POSTS}/create`)
-    @middleware(bodyValidator(['title', 'content']))
+class CreateProfileController {
+    @post(`${AppPaths.ENDPOINT_PROFILES}/create`)
+    @middleware(bodyValidator(['first_name', 'last_name', 'date_of_birth']))
     @middleware(headerMiddleware())
     async createPost(req: Request, res: Response, next: NextFunction) {
         try {
@@ -24,14 +24,14 @@ class CreatePostController {
             if(!token)
                 throw new CustomError(`Invalid token. Please signin again.`, 401)
 
-            const post = req.body as IPost;
-            const store = new PostsStore();
-            const addedPost = await store.createPost(
-                post,
+            const profile = req.body as IProfile;
+            const store = new ProfilesStore();
+            const addedProfile = await store.createProfile(
+                profile,
                 Number(token.user.id),
             );
 
-            res.send(addedPost);
+            res.send(addedProfile);
         } catch (err) {
             if (err instanceof CustomError) next(err);
             next(new CustomError(`${err}`, 500));

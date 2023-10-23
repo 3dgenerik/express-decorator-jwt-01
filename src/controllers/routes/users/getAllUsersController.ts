@@ -3,7 +3,8 @@ import { AppPaths } from '../../../constants';
 import { controller, get } from '../../decorators';
 import { UsersStore } from '../../../models/usersStore';
 import { CustomError } from '../../../errors/customError';
-
+import { middleware } from '../../decorators/middleware';
+import { headerMiddleware } from '../../../middlewares/headerMiddleware';
 
 @controller(AppPaths.PATH_PREFIX)
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -13,7 +14,9 @@ class GetAllUsersController {
         try {
             const type = req.params.type;
             const store = new UsersStore();
-            const users = await store.getAllUsers(type==='long'?true:false);
+            const users = await store.getAllUsers(
+                type === 'long' ? true : false,
+            );
             res.send(users);
         } catch (err) {
             if (err instanceof CustomError) next(err);

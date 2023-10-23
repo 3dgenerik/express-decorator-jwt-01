@@ -18,16 +18,16 @@ class authUser {
         try {
             const user = req.body as IUser;
             const store = new UsersStore();
-            const newUser = await store.authUser(user)
+            const newUser = await store.authUser(user);
 
-            if (!newUser){
+            if (!newUser) {
                 throw new CustomError(
                     `User with provided info doesn't exist. Please try again.`,
                     401,
                 );
             }
 
-            const token = jwt.sign({user: newUser}, SECRET_TOKEN)
+            const token = jwt.sign({ user: newUser }, SECRET_TOKEN);
 
             res.send(token);
         } catch (err) {

@@ -22,11 +22,11 @@ const bodyValidator_1 = require("../../../middlewares/bodyValidator");
 const decorators_1 = require("../../decorators");
 const middleware_1 = require("../../decorators/middleware");
 const customError_1 = require("../../../errors/customError");
-const postsStore_1 = require("../../../models/postsStore");
 const headerMiddleware_1 = require("../../../middlewares/headerMiddleware");
-let CreatePostController = 
+const profilesStore_1 = require("../../../models/profilesStore");
+let CreateProfileController = 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-class CreatePostController {
+class CreateProfileController {
     createPost(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -35,10 +35,10 @@ class CreatePostController {
                 const token = req.token;
                 if (!token)
                     throw new customError_1.CustomError(`Invalid token. Please signin again.`, 401);
-                const post = req.body;
-                const store = new postsStore_1.PostsStore();
-                const addedPost = yield store.createPost(post, Number(token.user.id));
-                res.send(addedPost);
+                const profile = req.body;
+                const store = new profilesStore_1.ProfilesStore();
+                const addedProfile = yield store.createProfile(profile, Number(token.user.id));
+                res.send(addedProfile);
             }
             catch (err) {
                 if (err instanceof customError_1.CustomError)
@@ -49,14 +49,14 @@ class CreatePostController {
     }
 };
 __decorate([
-    (0, decorators_1.post)(`${"/posts" /* AppPaths.ENDPOINT_POSTS */}/create`),
-    (0, middleware_1.middleware)((0, bodyValidator_1.bodyValidator)(['title', 'content'])),
+    (0, decorators_1.post)(`${"/profiles" /* AppPaths.ENDPOINT_PROFILES */}/create`),
+    (0, middleware_1.middleware)((0, bodyValidator_1.bodyValidator)(['first_name', 'last_name', 'date_of_birth'])),
     (0, middleware_1.middleware)((0, headerMiddleware_1.headerMiddleware)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object, Function]),
     __metadata("design:returntype", Promise)
-], CreatePostController.prototype, "createPost", null);
-CreatePostController = __decorate([
+], CreateProfileController.prototype, "createPost", null);
+CreateProfileController = __decorate([
     (0, decorators_1.controller)("/api" /* AppPaths.PATH_PREFIX */)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-], CreatePostController);
+], CreateProfileController);

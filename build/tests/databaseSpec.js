@@ -12,31 +12,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PostsStore = void 0;
 const database_1 = __importDefault(require("../database"));
-class PostsStore {
-    getAllPosts() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const conn = yield database_1.default.connect();
-            const sql = 'SELECT * FROM posts_table';
-            const result = yield conn.query(sql);
-            conn.release();
-            return result.rows;
-        });
-    }
-    createPost(post, userIdJwt) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const conn = yield database_1.default.connect();
-            //ISPRAVI TRECI PARAMETAR
-            const sql = 'INSERT INTO posts_table (title, content, users_id) VALUES($1, $2, $3) RETURNING *';
-            const result = yield conn.query(sql, [
-                post.title,
-                post.content,
-                userIdJwt,
-            ]);
-            conn.release();
-            return result.rows[0];
-        });
-    }
-}
-exports.PostsStore = PostsStore;
+describe('Testing connecting to PostgreSQL database:', () => {
+    let conn;
+    beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
+        conn = yield database_1.default.connect();
+    }));
+    it('Should connect to database', () => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const result = yield conn.query('SELECT 1');
+            expect(result).toBeTruthy();
+        }
+        catch (err) {
+            fail(err);
+        }
+    }));
+    afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
+        conn.release();
+    }));
+});

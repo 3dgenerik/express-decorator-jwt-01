@@ -1,3 +1,5 @@
+import { Request } from "express";
+
 export interface ICustomError {
     message: string;
     statusCode: number;
@@ -12,13 +14,13 @@ export interface IUser {
 }
 
 export interface IUserJWT {
-    user:{
+    user: {
         id: number;
         name: string;
         email: string;
         hash: string;
         avatars_id?: number;
-    }
+    };
 }
 
 export interface IAvatar {
@@ -33,3 +35,10 @@ export interface IPost {
     user_id: number;
 }
 
+export interface IProfile {
+    id?: number;
+    first_name: string;
+    last_name: string;
+    date_of_birth: string;
+    user_id: number;
+}

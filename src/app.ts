@@ -8,6 +8,17 @@ import './controllers/routes/users/createUserController';
 import './controllers/routes/users/authUserController';
 import './controllers/routes/posts/getAllPostsController';
 import './controllers/routes/posts/createPostController';
+import './controllers/routes/profiles/getAllProfilesController'
+import './controllers/routes/profiles/createProfileController'
+
+import { IUserJWT } from './interfaces';
+
+declare module "express-serve-static-core" {
+    interface Request {
+      token?: IUserJWT;
+    }
+  }
+
 
 const app = express();
 
@@ -19,3 +30,5 @@ app.use(handleErrorsMiddleware);
 app.listen(PORT, () => {
     console.log(`...listening port: ${PORT}`);
 });
+
+export default app;

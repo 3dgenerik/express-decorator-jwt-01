@@ -20,14 +20,14 @@ class CreateUser {
             const store = new UsersStore();
             const newUser = await store.createUser(user);
 
-            if (!newUser){
+            if (!newUser) {
                 throw new CustomError(
                     `User with name ${user.name} already exists`,
                     401,
                 );
             }
 
-            const token = jwt.sign({user: newUser}, SECRET_TOKEN)
+            const token = jwt.sign({ user: newUser }, SECRET_TOKEN);
             res.send(token);
         } catch (err) {
             if (err instanceof CustomError) next(err);

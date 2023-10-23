@@ -15,10 +15,11 @@ export const enum AppFeatures {
 export const enum AppPaths {
     PATH_PREFIX = '/api',
     ENDPOINT_USERS = '/users',
-    ENDPOINT_POSTS = '/posts'
+    ENDPOINT_POSTS = '/posts',
+    ENDPOINT_PROFILES = '/profiles'
 }
 
-export const enum ShowTable{
+export const enum ShowTable {
     SHORT = 'short',
-    LONG = 'long'
+    LONG = 'long',
 }
