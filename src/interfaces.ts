@@ -42,3 +42,9 @@ export interface IProfile {
     date_of_birth: string;
     user_id: number;
 }
+
+export interface IUserPosts{
+    title: string,
+    content: string,
+    users_id: number
+}

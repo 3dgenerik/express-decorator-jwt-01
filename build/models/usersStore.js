@@ -16,6 +16,7 @@ exports.UsersStore = void 0;
 const config_1 = require("../config");
 const database_1 = __importDefault(require("../database"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+// 'SELECT users_table.*, avatars_table.url, posts_table.id AS posts_id, posts_table.title, posts_table.content, posts_table.users_id, profiles_table.first_name, profiles_table.last_name, profiles_table.date_of_birth, profiles_table.user_id AS profiles_user_id FROM users_table JOIN avatars_table ON users_table.avatars_id = avatars_table.id JOIN posts_table ON users_table.id = posts_table.users_id JOIN profiles_table ON users_table.id = profiles_table.user_id';
 class UsersStore {
     hash(password) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -29,15 +30,11 @@ class UsersStore {
             return isMatch;
         });
     }
-    getAllUsers(long) {
+    getAllUsers() {
         return __awaiter(this, void 0, void 0, function* () {
             let sql = '';
             const conn = yield database_1.default.connect();
-            if (long)
-                sql =
-                    'SELECT users_table.*, avatars_table.url, posts_table.id AS posts_id, posts_table.title, posts_table.content, posts_table.users_id, profiles_table.first_name, profiles_table.last_name, profiles_table.date_of_birth, profiles_table.user_id AS profiles_user_id FROM users_table JOIN avatars_table ON users_table.avatars_id = avatars_table.id JOIN posts_table ON users_table.id = posts_table.users_id JOIN profiles_table ON users_table.id = profiles_table.user_id';
-            else
-                sql = 'SELECT * FROM users_table';
+            sql = 'SELECT * FROM users_table';
             const result = yield conn.query(sql);
             conn.release();
             return result.rows;
@@ -45,7 +42,7 @@ class UsersStore {
     }
     userExistById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const allUsers = yield this.getAllUsers(false);
+            const allUsers = yield this.getAllUsers();
             for (const user of allUsers) {
                 if (user.id === id)
                     return true;
@@ -55,7 +52,7 @@ class UsersStore {
     }
     userExist(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            const allUsers = yield this.getAllUsers(false);
+            const allUsers = yield this.getAllUsers();
             for (const item of allUsers) {
                 if (user.name === item.name && user.email === item.email)
                     return true;

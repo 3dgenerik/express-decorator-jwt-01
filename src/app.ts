@@ -10,6 +10,7 @@ import './controllers/routes/posts/getAllPostsController';
 import './controllers/routes/posts/createPostController';
 import './controllers/routes/profiles/getAllProfilesController'
 import './controllers/routes/profiles/createProfileController'
+import './controllers/routes/dashboard/dashboardRoutes'
 
 import { IUserJWT } from './interfaces';
 
